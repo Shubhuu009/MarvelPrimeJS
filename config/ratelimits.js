@@ -4,7 +4,7 @@ const asInt = (value, fallback) => {
 };
 
 module.exports = {
-  prefix: process.env.BOT_PREFIX || '&',
+  prefix: process.env.PREFIX || process.env.BOT_PREFIX || '.',
   userMessageLimit: asInt(process.env.RL_USER_MSG_LIMIT, 20),
   userMessageWindowMs: asInt(process.env.RL_USER_MSG_WINDOW_MS, 10000),
   guildMessageLimit: asInt(process.env.RL_GUILD_MSG_LIMIT, 300),

@@ -10,14 +10,14 @@ const parseEmoji = (raw) => {
 };
 
 module.exports = async (client, message) => {
-  if (!message?.guild || message.author?.bot) return;
+  if (!message?.guild || message.author?.bot) return true;
 
-  if (await isBlacklisted('guild', message.guild.id)) return;
-  if (await isBlacklisted('user', message.author.id)) return;
-  if (await handleMessageRate(message)) return;
+  if (await isBlacklisted('guild', message.guild.id)) return true;
+  if (await isBlacklisted('user', message.author.id)) return true;
+  if (await handleMessageRate(message)) return true;
 
   const reacts = await listReacts(message.guild.id);
-  if (!reacts.length) return;
+  if (!reacts.length) return false;
 
   for (const react of reacts) {
     const trigger = react.caseSensitive ? react.trigger : react.trigger.toLowerCase();
@@ -35,4 +35,6 @@ module.exports = async (client, message) => {
       // Ignore invalid emoji or permission errors
     }
   }
+
+  return false;
 };
