@@ -8,6 +8,7 @@ const onInteractionCreate = require('./events/interactionCreate');
 const NoPrefix = require('./database/schemas/NoPrefix');
 const BlacklistManager = require('./systems/blacklist/blacklist');
 const { handleVoicePanelInteraction } = require('./systems/voice/panel');
+const { registerLogging } = require('./systems/logging');
 
 const token = process.env.TOKEN;
 if (!token) {
@@ -114,6 +115,8 @@ const start = async () => {
       console.error('Failed to register slash commands:', err);
     });
   });
+
+  registerLogging(client);
 
   await client.login(token);
 };

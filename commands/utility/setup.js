@@ -18,12 +18,16 @@ const onCooldown = (guildId) => {
   return 0;
 };
 
-const moduleAvailable = (client, name) => client?.commands?.has(name);
+const moduleAvailable = (client, name) => {
+  if (name === 'j2c') return client?.commands?.has('voicepanel');
+  return client?.commands?.has(name);
+};
 
 const buildOverviewEmbed = (client, guild) => {
   const list = MODULES.map((m) => {
     const available = moduleAvailable(client, m);
-    return `${available ? '✅' : '⚠️'} \`${m}\`${available ? '' : ' (not installed)'}`;
+    const label = m === 'j2c' ? 'j2c (voicepanel)' : m;
+    return `${available ? '✅' : '⚠️'} \`${label}\`${available ? '' : ' (not installed)'}`;
   }).join('\n');
 
   return new EmbedBuilder()
@@ -40,8 +44,8 @@ const moduleHelp = (module, prefix = '.') => {
     antinuke: `Use \`/antinuke status\` or \`${prefix}antinuke status\` to view settings.\nEnable with \`/antinuke enable\`.`,
     welcomer: `Use \`/welcomer settings\` or \`${prefix}welcomer settings\` to view configuration.`,
     ticket: `Use \`/ticket settings\` or \`${prefix}ticket settings\` to view configuration.`,
-    j2c: 'Join-to-Create VC module is not installed in this bot yet.',
-    logging: 'Logging module is not installed in this bot yet.',
+    j2c: `Join-to-Create VC uses the voice panel.\nUse \`/voicepanel\` or \`${prefix}voicepanel\` while in a voice channel.`,
+    logging: `Use \`/logging setup\` or \`${prefix}logging setup\` to create logging channels and webhooks.`,
     music: 'Music module is not installed in this bot yet.',
   };
   return helpMap[module] || 'Module not available.';
@@ -87,7 +91,8 @@ module.exports = {
       return isSlash ? ctx.reply({ embeds: [embed], ephemeral: true }) : ctx.reply({ embeds: [embed] });
     }
 
-    const sub = isSlash ? interaction.options.getSubcommand() : args[0]?.toLowerCase();
+    const subRaw = isSlash ? interaction.options.getSubcommand() : args[0]?.toLowerCase();
+    const sub = subRaw === 'voicepanel' ? 'j2c' : subRaw;
     if (!sub || sub === 'all') {
       const embed = buildOverviewEmbed(client, guild);
       return isSlash ? ctx.reply({ embeds: [embed], ephemeral: true }) : ctx.reply({ embeds: [embed] });
@@ -96,6 +101,13 @@ module.exports = {
     if (!MODULES.includes(sub)) {
       const embed = Embeds.error('Invalid Module', `Available modules: ${MODULES.map((m) => `\`${m}\``).join(', ')}`);
       return isSlash ? ctx.reply({ embeds: [embed], ephemeral: true }) : ctx.reply({ embeds: [embed] });
+    }
+
+    if (sub === 'j2c') {
+      const voicePanel = client.commands?.get('voicepanel');
+      if (voicePanel?.execute) {
+        return voicePanel.execute({ client, message, interaction, isSlash });
+      }
     }
 
     const prefix = process.env.PREFIX || '.';

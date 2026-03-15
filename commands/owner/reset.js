@@ -140,6 +140,10 @@ module.exports = {
     });
 
     collector.on('end', async () => {
+      if (isSlash) {
+        await ctx.editReply({ components: [confirmRow(true)] }).catch(() => null);
+        return;
+      }
       if (!sent.editable) return;
       await sent.edit({ components: [confirmRow(true)] }).catch(() => null);
     });

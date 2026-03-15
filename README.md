@@ -20,3 +20,10 @@
 - **Mention prefix**: `@Bot help`
 - **No prefix** (if enabled): `help`
 - **Slash**: `/help`
+
+## Logging
+Use `/logging setup` (or `.logging setup`) to create logging channels and webhooks.  
+Set webhook avatar/name with `.env`:
+- `LOG_WEBHOOK_NAME`
+- `LOG_WEBHOOK_AVATAR_URL`
+- `LOG_EMBED_BANNER_URL` (optional banner image on embeds)
